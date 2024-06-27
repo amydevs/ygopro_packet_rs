@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 deku = "0.17"
+encoding_rs = "0.8.34"

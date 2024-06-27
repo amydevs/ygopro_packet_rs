@@ -27,7 +27,7 @@ pub struct HostInfo {
     pub duel_rule: u8,
     pub no_check_deck_content: u8,
     pub no_shuffle_deck: u8,
-    pub padding: [u8; 3],
+    _padding: [u8; 3],
     pub start_lp: u32,
     pub start_hand: u8,
     pub draw_count: u8,
@@ -42,6 +42,8 @@ pub struct HostInfo {
     pub forbidden_types: u32,
     pub extra_rules: u16,
     pub sizes: DeckSizes,
+    // not entirely sure about the padding here. but it seems to work.
+    _padding_1: u16
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]

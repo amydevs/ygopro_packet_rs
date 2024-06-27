@@ -81,6 +81,10 @@ pub struct Rematch {
 
 #[cfg(test)]
 mod tests {
+    use encoding_rs::UTF_8;
+
+    use crate::utils::*;
+
     use super::*;
 
     #[test]
@@ -91,14 +95,16 @@ mod tests {
             .map(|i| u8::from_str_radix(&packet[i..i + 2], 16))
             .collect::<Result<Vec<_>, _>>().unwrap();
         let (rest, ctos) = HostRequest::<CTOSMsg>::from_bytes((&bytes, 0)).unwrap();
-        // if let CTOSMsg::PlayerInfo(thing) = ctos.body  {
-        //     println!("{:?}", String::from_utf16_lossy(&thing.name));
-        // }
+        if let CTOSMsg::PlayerInfo(thing) = ctos.body  {
+            println!("{:?}", cast_to_string(&thing.name));
+        }
         let (rest, ctos) = HostRequest::<CTOSMsg>::from_bytes(rest).unwrap();
-        // if let CTOSMsg::CreateGame(thing) = ctos.body  {
-        //     println!("{:?}", String::from_utf8(thing.notes.to_vec()));
-        // }
-        println!("{:?}", rest.0);
+        if let CTOSMsg::CreateGame(thing) = ctos.body  {
+            println!("{:?}", &thing.password);
+            println!("{:?}", String::from_utf16(&thing.name));
+            println!("{:?}", thing.notes.map(|x| x as char));
+        }
+        println!("{:x?}", rest.0);
     }
 }
 
