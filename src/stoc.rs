@@ -38,7 +38,7 @@ pub enum STOCMsg {
     #[deku(id = 0x18)]
     TimeLimit(TimeLimit) = 0x18,
     #[deku(id = 0x19)]
-    Chat = 0x19,
+    Chat(Chat) = 0x19,
     #[deku(id = 0x20)]
     PlayerEnter = 0x20,
     #[deku(id = 0x21)]
@@ -48,13 +48,13 @@ pub enum STOCMsg {
     #[deku(id = 0x30)]
     NewReplay = 0x30,
     #[deku(id = 0xF0)]
-    Catchup = 0xF0,
+    Catchup(Catchup) = 0xF0,
     #[deku(id = 0xF1)]
     Rematch = 0xF1,
     #[deku(id = 0xF2)]
     WaitingRematch = 0xF2,
     #[deku(id = 0xF3)]
-    Chat2 = 0xF3,
+    Chat2(Chat2) = 0xF3,
 }
 
 
@@ -107,10 +107,21 @@ pub struct WatchChange {
     pub count: u16,
 }
 
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 pub struct Catchup {
-    pub catching_up: u16,
+    pub is_catching_up: u16,
 }
 
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+pub struct Chat {
+    player: u16,
+    msg: [u16; 256],
+}
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 pub struct Chat2 {
-    
+    player_type: u8,
+    is_team: u8,
+    client_name: [u16; 20],
+    msg: [u16; 256],
 }
