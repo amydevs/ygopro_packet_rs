@@ -9,25 +9,20 @@ pub struct HostRequest<T: DekuWriter + for<'a> DekuReader<'a> > {
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 pub struct HostRequestStream<T: DekuWriter + for<'a> DekuReader<'a>> {
-    #[deku(update = "self.requests.len()")]
-    pub count: u8,
-    #[deku(count = "count")]
+    #[deku(read_all)]
     pub requests: Vec<HostRequest<T>>
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct HostInfo {
-    /**
-     * Banlist Hash
-     */
     pub lflist: u32,
     pub rule: u8,
     pub mode: u8,
     pub duel_rule: u8,
     pub no_check_deck_content: u8,
+    #[deku(pad_bytes_after = "3")]
     pub no_shuffle_deck: u8,
-    _padding: [u8; 3],
     pub start_lp: u32,
     pub start_hand: u8,
     pub draw_count: u8,
@@ -41,9 +36,8 @@ pub struct HostInfo {
     pub duel_flags_low: u32,
     pub forbidden_types: u32,
     pub extra_rules: u16,
+    #[deku(pad_bytes_after = "2")]
     pub sizes: DeckSizes,
-    // not entirely sure about the padding here. but it seems to work.
-    _padding_1: u16
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
