@@ -1,6 +1,22 @@
-use deku::prelude::*;
+use deku::{ctx::Endian, prelude::*};
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+pub struct HostRequest<T: DekuWriter + for<'a> DekuReader<'a> > {
+    #[deku(endian = "big")]
+    pub id: u16,
+    pub body: T
+}
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+pub struct HostRequestStream<T: DekuWriter + for<'a> DekuReader<'a>> {
+    #[deku(update = "self.requests.len()")]
+    pub count: u8,
+    #[deku(count = "count")]
+    pub requests: Vec<HostRequest<T>>
+}
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct HostInfo {
     /**
      * Banlist Hash
@@ -11,6 +27,7 @@ pub struct HostInfo {
     pub duel_rule: u8,
     pub no_check_deck_content: u8,
     pub no_shuffle_deck: u8,
+    pub padding: [u8; 3],
     pub start_lp: u32,
     pub start_hand: u8,
     pub draw_count: u8,
@@ -28,24 +45,28 @@ pub struct HostInfo {
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct Version {
     pub major: u8,
     pub minor: u8,
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct ClientVersion {
     pub client: Version,
     pub core: Version,
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct Sizes {
     pub min: u16,
     pub max: u16,
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct DeckSizes {
     pub main: Sizes,
     pub extra: Sizes,
@@ -53,7 +74,7 @@ pub struct DeckSizes {
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(id_type = "u8")]
+#[deku(id_type = "u8", endian = "endian", ctx = "endian: deku::ctx::Endian")]
 #[repr(u8)]
 pub enum PlayerType {
     #[deku(id = 0x00)]
