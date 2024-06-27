@@ -14,11 +14,11 @@ pub enum CTOSMsg {
     #[deku(id = 0x04)]
     TurnChoice = 0x04,
     #[deku(id = 0x10)]
-    PlayerInfo(PlayerInfo) = 0x10,
+    PlayerInfo(PlayerInfoBody) = 0x10,
     #[deku(id = 0x11)]
-    CreateGame(CreateGame) = 0x11,
+    CreateGame(CreateGameBody) = 0x11,
     #[deku(id = 0x12)]
-    JoinGame(JoinGame) = 0x12,
+    JoinGame(JoinGameBody) = 0x12,
     #[deku(id = 0x13)]
     LeaveGame = 0x13,
     #[deku(id = 0x14)]
@@ -36,22 +36,22 @@ pub enum CTOSMsg {
     #[deku(id = 0x23)]
     NotReady = 0x23,
     #[deku(id = 0x24)]
-    Kick(Kick) = 0x24,
+    Kick(KickBody) = 0x24,
     #[deku(id = 0x25)]
     Start = 0x25,
     #[deku(id = 0xF0)]
-    Rematch(Rematch) = 0xF0
+    Rematch(RematchBody) = 0xF0
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
-pub struct PlayerInfo {
+pub struct PlayerInfoBody {
     pub name: [u16; 20],
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
-pub struct CreateGame {
+pub struct CreateGameBody {
     pub info: HostInfo,
     pub name: [u16; 20],
     pub password: [u16; 20],
@@ -60,7 +60,7 @@ pub struct CreateGame {
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
-pub struct JoinGame {
+pub struct JoinGameBody {
     pub version: u16,
     pub game_id: u32,
     pub password: [u16; 20],
@@ -69,13 +69,13 @@ pub struct JoinGame {
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
-pub struct Kick {
+pub struct KickBody {
     pub pos: u8
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
-pub struct Rematch {
+pub struct RematchBody {
     pub rematch: u8
 }
 
