@@ -1,8 +1,8 @@
-use deku::{ctx::Endian, prelude::*};
+use deku::prelude::*;
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 pub struct HostRequest<T: DekuWriter + for<'a> DekuReader<'a> > {
-    #[deku(endian = "big")]
+    #[deku(endian = "little")]
     pub id: u16,
     pub body: T
 }
