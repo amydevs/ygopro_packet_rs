@@ -132,10 +132,29 @@ pub struct Chat {
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct Chat2 {
-    player_type: u8,
+    player_type: Chat2PlayerType,
     is_team: u8,
     client_name: [u16; 20],
     msg: [u16; 256],
+}
+
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(id_type = "u8", endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[repr(u8)]
+pub enum Chat2PlayerType {
+    #[deku(id = 0x00)]
+    Player = 0x00,
+    #[deku(id = 0x01)]
+    Observer = 0x01,
+    #[deku(id = 0x02)]
+    System = 0x02,
+    #[deku(id = 0x03)]
+    SystemError = 0x03,
+    #[deku(id = 0x04)]
+    SystemShout = 0x04,
+    #[deku(id_pat = "_")]
+    Other(u8)
 }
 
 

@@ -68,19 +68,3 @@ pub struct DeckSizes {
     pub extra: Sizes,
     pub side: Sizes,
 }
-
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(id_type = "u8", endian = "endian", ctx = "endian: deku::ctx::Endian")]
-#[repr(u8)]
-pub enum PlayerType {
-    #[deku(id = 0x00)]
-    Player = 0x00,
-    #[deku(id = 0x01)]
-    Observer = 0x01,
-    #[deku(id = 0x02)]
-    System = 0x02,
-    #[deku(id = 0x03)]
-    SystemError = 0x03,
-    #[deku(id = 0x04)]
-    SystemShout = 0x04,
-}
