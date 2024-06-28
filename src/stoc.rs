@@ -59,9 +59,80 @@ pub enum STOCMsg {
 
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(id_type = "u8", endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[repr(u8)]
+pub enum ErrorMsgBody {
+    #[deku(id = 0x01)]
+    JoinError(
+        #[deku(pad_bytes_before = "3")]
+        JoinErrorType
+    ) = 0x01,
+    #[deku(id = 0x02)]
+    DeckError(
+        #[deku(pad_bytes_before = "3")]
+        DeckErrrorDetails
+    ) = 0x02,
+    #[deku(id = 0x03)]
+    SideError(
+        #[deku(pad_bytes_before = "3")]
+        u32
+    ) = 0x03,
+    #[deku(id = 0x04)]
+    VersionError(
+        #[deku(pad_bytes_before = "3")]
+        u32
+    ) = 0x04,
+    #[deku(id = 0x05)]
+    VersionError2(
+        #[deku(pad_bytes_before = "3")]
+        ClientVersion
+    ) = 0x05,
+}
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(id_type = "u32", endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[repr(u32)]
+pub enum JoinErrorType {
+    Unable = 0x00,
+    Password,
+    Refused
+}
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
-pub struct ErrorMsgBody {
+pub struct DeckErrrorDetails {
+    pub error: DeckErrorType,
+    pub count: DeckErrorCount,
     pub code: u32,
+}
+
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(id_type = "u32", endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[repr(u32)]
+pub enum DeckErrorType {
+    None = 0x00,
+    Lflist,
+    OCGOnly,
+    TCGOnly,
+    UnknownCard,
+    CardCount,
+    MainCount,
+    ExtraCount,
+    SideCount,
+    ForbType,
+    UnofficialCard,
+    InvalidSize,
+    TooManyLegends,
+    TooManySkills,
+}
+
+#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
+pub struct DeckErrorCount {
+    pub got: u32,
+    pub min: u32,
+    pub max: u32,
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
@@ -143,18 +214,11 @@ pub struct Chat2Body {
 #[deku(id_type = "u8", endian = "endian", ctx = "endian: deku::ctx::Endian")]
 #[repr(u8)]
 pub enum Chat2PlayerType {
-    #[deku(id = 0x00)]
     Player = 0x00,
-    #[deku(id = 0x01)]
-    Observer = 0x01,
-    #[deku(id = 0x02)]
-    System = 0x02,
-    #[deku(id = 0x03)]
-    SystemError = 0x03,
-    #[deku(id = 0x04)]
-    SystemShout = 0x04,
-    #[deku(id_pat = "_")]
-    Other(u8)
+    Observer,
+    System,
+    SystemError,
+    SystemShout,
 }
 
 
