@@ -196,17 +196,17 @@ pub struct CatchupBody {
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct ChatBody {
-    player: u16,
-    msg: [u16; 256],
+    pub player: u16,
+    pub msg: [u16; 256],
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
 pub struct Chat2Body {
-    player_type: Chat2PlayerType,
-    is_team: u8,
-    client_name: [u16; 20],
-    msg: [u16; 256],
+    pub player_type: Chat2PlayerType,
+    pub is_team: u8,
+    pub client_name: [u16; 20],
+    pub msg: [u16; 256],
 }
 
 
@@ -233,14 +233,31 @@ mod tests {
     fn stoc_create_game() {
         let packet = "0500110d000000";
         let bytes = cast_hex_stream_to_c_array(packet);
-        let (rest, stoc) = HostRequest::<STOCMsg>::from_bytes((&bytes, 0)).unwrap();
-        println!("{:?}", stoc);
+        let (_rest, stoc) = HostRequest::<STOCMsg>::from_bytes((&bytes, 0)).unwrap();
+        assert!(matches!(&stoc.body, STOCMsg::CreateGame(_)));
+        if let STOCMsg::CreateGame(body) = &stoc.body {
+            assert_eq!(body.game_id, 13);
+        }
     }
 
     #[test]
     fn stoc_stream() {
         let packet = "450012aaec1fd70300000000000000401f00000501b40000000000016201f128010a0001000000010000000100000000e8020000000000000028003c0000000f0000000f0000002b002050006c0061007900650072000000000000000000000000000000000000000000000000000000000000000200210a02001310";
         let bytes = cast_hex_stream_to_c_array(packet);
-        let (rest, stoc) = HostRequestStream::<STOCMsg>::from_bytes((&bytes, 0)).unwrap();
+        let (_rest, stoc) = HostRequestStream::<STOCMsg>::from_bytes((&bytes, 0)).unwrap();
+        println!("{:?}", stoc);
+        assert!(matches!(&stoc.requests[0].body, STOCMsg::JoinGame(_)));
+        assert!(matches!(&stoc.requests[1].body, STOCMsg::PlayerEnter(_)));
+        if let STOCMsg::PlayerEnter(body) = &stoc.requests[1].body {
+            assert_eq!(utils::cast_to_string(&body.name).unwrap(), "Player");
+        }
+        assert!(matches!(&stoc.requests[2].body, STOCMsg::PlayerChange(_)));
+        if let STOCMsg::PlayerChange(body) = &stoc.requests[2].body {
+            assert_eq!(body.status, 10);
+        }
+        assert!(matches!(&stoc.requests[3].body, STOCMsg::TypeChange(_)));
+        if let STOCMsg::TypeChange(body) = &stoc.requests[2].body {
+            assert_eq!(body.to_type, 16);
+        }
     }
 }
